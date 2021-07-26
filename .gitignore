@@ -1,0 +1,3 @@
+.venv
+**/githubdata
+__pycache__
