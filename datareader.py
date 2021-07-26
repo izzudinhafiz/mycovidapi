@@ -2,31 +2,46 @@ import pandas as pd
 import pickle
 import os
 from datetime import date
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 from dataset import DataSet
+from name_map import data_map
+
+
+def load_data_from_github() -> DataSet:
+    ds = DataSet()
+
+    for name, url in data_map.items():
+        df = pd.read_csv(url)
+        ds[name] = df
+
+    return ds
 
 
 class DataReader:
-    def __init__(self, path: str):
-        self.base_path = path
-        dirs = os.listdir(path)
-        available_dates: List[date] = []
-        for dir in dirs:
-            try:
-                available_dates.append(date.fromisoformat(dir))
-            except ValueError:
-                pass
+    def __init__(self, path: Union[str, None], dataset: DataSet = None):
+        if path is not None:
+            self.base_path = path
+            dirs = os.listdir(path)
+            available_dates: List[date] = []
+            for dir in dirs:
+                try:
+                    available_dates.append(date.fromisoformat(dir))
+                except ValueError:
+                    pass
 
-        if len(available_dates) == 0:
-            raise FileNotFoundError("No available directory with available data")
+            if len(available_dates) == 0:
+                raise FileNotFoundError("No available directory with available data")
 
-        available_dates = sorted(available_dates)
-        self.current_date = available_dates[-1]
+            available_dates = sorted(available_dates)
+            self.current_date = available_dates[-1]
 
-        with open(f"{self.base_path}/{self.current_date.isoformat()}/dataset", "rb") as f:
-            self.data: DataSet = pickle.load(f)
-
-        print(self.current_date)
+            with open(f"{self.base_path}/{self.current_date.isoformat()}/dataset", "rb") as f:
+                self.data: DataSet = pickle.load(f)
+        else:
+            if dataset is not None:
+                self.data = dataset
+            else:
+                raise ValueError("If path not set, must supply DataSet object")
 
     def get_cases(self, state_id: str, from_date: str, to_date: str) -> Tuple[List[Dict], int]:
         if state_id is None:
@@ -99,6 +114,6 @@ class DataReader:
             return df.loc[(df["date"] >= from_date) & (df["date"] <= to_date)]
 
 
-if __name__ == "__main__":
-    dr = DataReader("githubdata")
-    print(dr.get_timeseries(None, None))
+# if __name__ == "__main__":
+#     dr = DataReader("githubdata")
+#     print(dr.get_timeseries(None, None))

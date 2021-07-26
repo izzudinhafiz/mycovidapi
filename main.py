@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-from datareader import DataReader
+from datareader import DataReader, load_data_from_github
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -12,7 +12,7 @@ parser.add_argument("from_date")
 parser.add_argument("to_date")
 parser.add_argument("facility")
 
-data_source = DataReader("githubdata")
+data_source = DataReader(None, dataset=load_data_from_github())
 
 
 class Timeseries(Resource):
