@@ -12,7 +12,7 @@ parser.add_argument("from_date")
 parser.add_argument("to_date")
 parser.add_argument("facility")
 
-data_source = DataReader(None, dataset=load_data_from_github())
+data_source = DataReader("githubdata")
 
 
 class Timeseries(Resource):
@@ -63,20 +63,14 @@ class Clusters(Resource):
         return data_source.get_clusters(args.from_date, args.to_date)
 
 
-api.add_resource(Timeseries, "/timeseries")
-api.add_resource(Cases, "/cases")
-api.add_resource(Deaths, "/deaths")
-api.add_resource(Tests, "/tests")
-api.add_resource(Checkins, "/checkins")
-api.add_resource(Healthcares, "/healthcares")
-api.add_resource(Traces, "/traces")
-api.add_resource(Clusters, "/clusters")
-
-
-@app.route("/")
-def home():
-    return "Covid-19 Malaysia Data API V1. Created by Izzudin Hafiz"
-# Add CITF data source
+api.add_resource(Timeseries, "/api/v1/timeseries")
+api.add_resource(Cases, "/api/v1/cases")
+api.add_resource(Deaths, "/api/v1/deaths")
+api.add_resource(Tests, "/api/v1/tests")
+api.add_resource(Checkins, "/api/v1/checkins")
+api.add_resource(Healthcares, "/api/v1/healthcares")
+api.add_resource(Traces, "/api/v1/traces")
+api.add_resource(Clusters, "/api/v1/clusters")
 
 
 if __name__ == "__main__":

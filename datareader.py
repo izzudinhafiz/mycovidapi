@@ -4,7 +4,7 @@ import os
 from datetime import date
 from typing import List, Dict, Tuple, Union
 from dataset import DataSet
-from name_map import data_map
+from name_map import data_map, state_map
 
 
 def load_data_from_github() -> DataSet:
@@ -48,7 +48,7 @@ class DataReader:
             df = self.data["cases_msia"]
         else:
             main_df = self.data["cases_state"]
-            df = main_df.loc[main_df["state"] == state_id]
+            df = main_df.loc[main_df["state"] == state_map[state_id]]
         return self._get_from_df(df, from_date, to_date).to_dict(orient="records"), 200
 
     def get_deaths(self, state_id: str, from_date: str, to_date: str) -> Tuple[List[Dict], int]:
@@ -56,7 +56,7 @@ class DataReader:
             df = self.data["deaths_msia"]
         else:
             main_df = self.data["deaths_state"]
-            df = main_df.loc[main_df["state"] == state_id]
+            df = main_df.loc[main_df["state"] == state_map[state_id]]
         return self._get_from_df(df, from_date, to_date).to_dict(orient="records"), 200
 
     def get_tests(self, from_date: str, to_date: str) -> Tuple[List[Dict], int]:
@@ -68,7 +68,7 @@ class DataReader:
             df = self.data["checkin_msia"]
         else:
             main_df = self.data["checkin_state"]
-            df = main_df.loc[main_df["state"] == state_id]
+            df = main_df.loc[main_df["state"] == state_map[state_id]]
         return self._get_from_df(df, from_date, to_date).to_dict(orient="records"), 200
 
     def get_healthcares(self, state_id: str, facility: str, from_date: str, to_date: str) -> Tuple[List[Dict], int]:
@@ -84,7 +84,7 @@ class DataReader:
         if state_id is None:
             df = main_df
         else:
-            df = main_df.loc[main_df["state"] == state_id]
+            df = main_df.loc[main_df["state"] == state_map[state_id]]
         return self._get_from_df(df, from_date, to_date).to_dict(orient="records"), 200
 
     def get_traces(self, from_date: str, to_date: str) -> Tuple[List[Dict], int]:
@@ -112,6 +112,8 @@ class DataReader:
             return df.loc[df["date"] <= to_date]
         else:
             return df.loc[(df["date"] >= from_date) & (df["date"] <= to_date)]
+
+# TODO: Add State ISO Code lookup instead of state names
 
 
 # if __name__ == "__main__":

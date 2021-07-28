@@ -18,3 +18,6 @@ data_map = {"cases_msia": e_url + "cases_malaysia.csv",
             "quarantine_io": e_url + "pkrc.csv",
             "hospital_io": e_url + "hospital.csv",
             "icu_io": e_url + "icu.csv"}
+
+state_map = {"JHR": "Johor", "KDH": "Kedah", "KTN": "Kelantan", "MLK": "Melaka", "NSN": "Negeri Sembilan", "PHG": "Pahang", "PNG": "Pulau Pinang", "PRK": "Perak", "PLS": "Perlis",
+             "SBH": "Sabah", "SWK": "Sarawak", "SGR": "Selangor", "TRG": "Terengganu", "KUL": "W.P. Kuala Lumpur", "LBN": "W.P. Labuan", "PJY": "W.P. Putrajaya", }
