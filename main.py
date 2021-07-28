@@ -73,5 +73,12 @@ api.add_resource(Traces, "/api/v1/traces")
 api.add_resource(Clusters, "/api/v1/clusters")
 
 
+@app.route("/")
+def home_route():
+    return 'h1>Covid-19 Malaysia Data API V1. Created by <a href="https://izzudinhafiz.com">Izzudin Hafiz</a></h1>\
+            <p>Documentation on how to use is hosted on <a href=#>Postman</a></p>\
+            <p>This is open source project. For source code visit <a href="https://github.com/izzudinhafiz/mycovidapi">Github Repo</a></p>'
+
+
 if __name__ == "__main__":
     app.run()
