@@ -97,7 +97,7 @@ pip install -r requirements.txt
 ```bash
 mkdir localdata
 
-python data_seed.py
+python db_sync.py
 ```
 
 ## Start the application
@@ -106,7 +106,11 @@ python app.py
 ```
 
 ## Updating the local data
-TODO: Local data update
+To manually update local data
+
+```bash
+python db_sync.py
+```
 
 # Deployment Setup
 
@@ -128,7 +132,7 @@ pip install -r requirements.txt
 ```bash
 mkdir localdata
 
-python data_seed.py
+python db_sync.py
 ```
 
 ## Setup a gunicorn service to serve the app
