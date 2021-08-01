@@ -1,3 +1,4 @@
+import os
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from typing import List, Dict, Optional
@@ -30,6 +31,10 @@ def fix_date_type(df_list: List[Dict], date_label: Optional[List] = None) -> Lis
 
     return df_list
 
+
+# Remove old DB file
+if os.path.exists("moh_data.sqlite"):
+    os.remove("moh_data.sqlite")
 
 # Renaming Map
 cases_msia_rename = {"cluster_import": "cases_import",
