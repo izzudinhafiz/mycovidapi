@@ -1,3 +1,5 @@
 .venv
 **/githubdata
 __pycache__
+*.sqlite
+*_dev.py
