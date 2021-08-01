@@ -62,23 +62,21 @@ Developer should also cache the data as the data is updated only once a day.
 
 	You can use the same start and end date in the API query. 
 	
-	E.g. `/api/v1/cases?state_id=KUL&start_date=2021-01-01&end_date=2021-01-01`
+	E.g. `/api/v1/cases/state?state_id=KUL&start_date=2021-01-01&end_date=2021-01-01`
 
 2. How do I get the nationwide new Covid cases for a particular date range?
 
-	You can omit the `state_id` field to get nationwide data for any of the endpoints
-
-	E.g. `/api/v1/cases?start_date=2021-01-01&end_date=2021-01-01`
+	E.g. `/api/v1/cases/country?start_date=2021-01-01&end_date=2021-01-01`
 
 3. How do I get all the data for new Covid cases since the start?
 
 	You can omit the `start_date` and `end_date` in the queries
 
-	E.g. (state) `/api/v1/cases?state_id=KUL`
+	E.g. (state) `/api/v1/cases/state?state_id=KUL`
 
-	E.g. (nation) `/api/v1/cases`
+	E.g. (nation) `/api/v1/cases/country`
 
-# Local Setup
+# Local Setup for Development
 
 ## Clone the repo locally
 `git clone https://github.com/izzudinhafiz/mycovidapi.git`
@@ -108,13 +106,85 @@ python app.py
 ```
 
 ## Updating the local data
-Once a day, you should run the `data_sync.py` to update the local data. The script will automatically download the new data and back up the old dataset.
+TODO: Local data update
 
 # Deployment Setup
 
-TODO: nginx setup
+## Clone the repo locally
+`git clone https://github.com/izzudinhafiz/mycovidapi.git`
 
-TODO: gunicorn systemd service setup
+## Set up a local Python environment
+```bash
+cd ~/mycovidapi
+
+python3 -m venv venv
+
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+## Seed the database
+
+```bash
+mkdir localdata
+
+python data_seed.py
+```
+
+## Setup a gunicorn service to serve the app
+Use your preferred text editor to create a service file
+```bash
+sudo nano /etc/systemd/system/mycovidapi.service
+```
+
+Create this  systemd Unit file
+```
+[Unit]
+Description=MY Covid API
+After=network.target
+
+[Service]
+Type=simple
+ExecStart= /home/user/mycovidapi/.venv/bin/gunicorn --workers=3 --chdir  /home/user/mycovidapi/ app:app
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## Setup nginx
+Use your preferred text editor to create an nginx site file
+
+```bash
+sudo nano /etc/nginx/sites-available/mycovidapi.izzudinhafiz.com
+```
+
+Create this file:
+
+```
+server {
+	server_name mycovidapi.izzudinhafiz.com;
+	root /home/user/mycovidapi/;
+
+	location / {
+		proxy_pass http://127.0.0.1:8000;
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
+}
+```
+
+Link it to `sites-enabled` and allow nginx firewall access
+```bash
+sudo ln -s /etc/nginx/sites-available/mycovidapi.izzudinhafiz.com /etc/nginx/sites-enabled
+
+sudo ufw allow 'Nginx Full'
+```
+
+## Start gunicorn and nginx
+```bash
+sudo systemctl restart nginx
+sudo systemctl start mycovidapi.service
+```
 
 TODO: Auto local data update
 
