@@ -4,3 +4,4 @@ __pycache__
 *.sqlite
 *_dev.py
 *.log
+*.sh

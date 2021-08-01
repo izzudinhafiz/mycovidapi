@@ -190,7 +190,27 @@ sudo systemctl restart nginx
 sudo systemctl start mycovidapi.service
 ```
 
-TODO: Auto local data update
+## Cronjob for daily database update
+Create a `daily.sh` script to safely stop the service and perform update and restart service
+
+```bash
+#!/bin/bash
+systemctl stop mycovidapi.service
+/home/user/mycovidapi/.venv/bin/python /home/user/mycovidapi/db_sync.py
+systemctl restart mycovidapi.service
+```
+
+Run `sudo crontab -e` to create a sudo cronjob to run the script. Example below runs every 6 hours
+
+```bash
+0 */6 * * * bash /home/user/mycovidapi/daily.sh >> /home/user/mycovidapi/daily_sync.log 2>&1
+```
+
+According to MoH Github page, the data is updated daily by 2359. So if you'd prefer to update the database at midnight instead, modify the cronjob to
+
+```bash
+0 0 * * * bash /home/user/mycovidapi/daily.sh >> /home/user/mycovidapi/daily_sync.log 2>&1
+```
 
 # Sources
 
