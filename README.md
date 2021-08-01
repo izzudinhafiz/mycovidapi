@@ -15,8 +15,11 @@ The current _V1_ API presents all the raw data from MoH as is with no normalizat
 
 The API uses [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format dates `YYYY-MM-DD`.
 
+The API renames some of the fields that was given by MoH to be more consistent and self-descriptive. You can generally base the field name with those in MoH dataset.
+
 Generally for each endpoint:
-- Omitting the `state_id` in the query will return the nationwide data. 
+- For most endpoints, there are `/state/` and `/country/` sub-endpoints
+- For endpoints having state data, you need to include `state_id` as below.
 - Omitting both `start_date` and `end_date` will return all the data. 
 - Omitting `start_date` will return data from the start of the dataset.
 - Omitting `end_date` will return data up to the current date.
@@ -91,18 +94,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Run a local data sync
+## Seed the database
 
 ```bash
 mkdir localdata
 
-python data_sync.py localdata/
+python data_seed.py
 ```
 
 ## Start the application
 ```bash
-python main.py
+python app.py
 ```
+
 ## Updating the local data
 Once a day, you should run the `data_sync.py` to update the local data. The script will automatically download the new data and back up the old dataset.
 
