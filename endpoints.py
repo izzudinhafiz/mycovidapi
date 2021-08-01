@@ -12,9 +12,11 @@ from typing import List, Dict, Optional
 
 
 app = Flask(__name__)
-
+app.config["RESTFUL_JSON"] = {
+    "indent": 2,
+}
 if getenv("FLASK_DEBUG"):
-    app.config["DEBUG"] = True
+    app.config["DEBUG"] = False
 
 api = Api(app)
 engine = db.create_engine("sqlite:///moh_data.sqlite")
