@@ -31,8 +31,8 @@ deaths = {
 
 tests = {
     "date": fields.String,
-    "rtk-ag": fields.Integer,
-    "pcr": fields.Integer
+    "rtk-ag": fields.Integer(attribute="tests_rtk_ag"),
+    "pcr": fields.Integer(attribute="tests_pcr")
 }
 
 checkins = {
