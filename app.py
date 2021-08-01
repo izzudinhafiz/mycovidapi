@@ -1,6 +1,6 @@
 from flask import render_template
-from main import app, api
-from main import Cases, Deaths, Tests, Checkins, Healthcares, Traces
+from endpoints import app, api
+from endpoints import Cases, Deaths, Tests, Checkins, Healthcares, Traces
 
 
 api.add_resource(Cases, "/api/v1/cases/<location>")
