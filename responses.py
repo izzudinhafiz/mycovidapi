@@ -1,7 +1,25 @@
 from flask_restful import fields
 
+timeseries = {
+    "date": fields.String,
+    "cases": fields.Integer,
+    "deaths": fields.Integer,
+    "recovered": fields.Integer
+}
 
-cases = {
+cases_country = {
+    "date": fields.String,
+    "cases": fields.Integer(attribute="cases_new"),
+    "clusterImport": fields.Integer(attribute="cases_import"),
+    "clusterReligious": fields.Integer(attribute="cases_religious"),
+    "clusterCommunity": fields.Integer(attribute="cases_community"),
+    "clusterHighRisk": fields.Integer(attribute="cases_highrisk"),
+    "clusterEducation": fields.Integer(attribute="cases_education"),
+    "clusterDetentionCentre": fields.Integer(attribute="cases_detention_centre"),
+    "clusterWorkplace": fields.Integer(attribute="cases_workplace")
+}
+
+cases_state = {
     "date": fields.String,
     "cases": fields.Integer(attribute="cases_new")
 }

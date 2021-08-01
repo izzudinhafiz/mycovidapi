@@ -97,9 +97,12 @@ def get_states_aggregate(session, model, from_date: Optional[date] = None,
 
 
 class Cases(Resource):
-    @marshal_with(responses.cases)
     def get(self, location):
-        return standard_query(location)
+        output = standard_query(location)
+        if location == "country":
+            return marshal(output, responses.cases_country)
+        else:
+            return marshal(output, responses.cases_state)
 
 
 class Deaths(Resource):
