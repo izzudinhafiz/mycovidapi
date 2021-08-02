@@ -1,5 +1,4 @@
 import os
-from pandas.core.reshape.merge import merge
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from typing import List, Dict, Optional
@@ -8,7 +7,7 @@ from datetime import date
 
 from database.dataset import DataSet
 from database.db_model import *
-from common.name_map import url_map
+from common.name_map import url_map, c_url_map
 
 import logging
 
@@ -20,6 +19,20 @@ def fetch_data_from_github() -> DataSet:
         df = pd.read_csv(url)
         ds[name] = df
 
+    for name, url in c_url_map.items():
+        df = pd.read_csv(url)
+        ds[name] = df
+
+    raw = pd.read_json("https://pomber.github.io/covid19/timeseries.json")
+
+    out = []
+    for row in raw["Malaysia"]:
+        out.append(row)
+
+    df = pd.DataFrame.from_dict(out)
+    df["date"] = pd.to_datetime(df["date"])  # type: ignore
+    df["date"] = df["date"].astype(str)
+    ds["timeseries"] = df
     return ds
 
 
@@ -45,6 +58,24 @@ def rename_data_from_github() -> DataSet:
 
     traces_rename = {"casual_contacts": "traces_casual", "hide_large": "traces_hide_large", "hide_small": "traces_hide_small"}
 
+    registration_rename = {
+        "total": "reg_total",
+        "phase2": "reg_phase2",
+        "mysj": "reg_via_mysejahtera",
+        "call": "reg_via_call",
+        "web": "reg_via_web",
+        "children": "reg_children",
+        "elderly": "reg_elderly",
+        "comorb": "reg_comorb",
+        "oku": "reg_oku"
+    }
+
+    vaccination_rename = {
+        "dose1_cumul": "dose1_cumulative",
+        "dose2_cumul": "dose2_cumulative",
+        "total_cumul": "total_cumulative"
+    }
+
     # Special name wrangling for checkin time labels which are 1, 2, 3 etc.
     # This renames them to time_0000, time_0030 etc.
     idx = 0
@@ -62,6 +93,11 @@ def rename_data_from_github() -> DataSet:
     raw_data["trace_msia"].rename(columns=traces_rename, inplace=True, errors="raise")              # type: ignore
     raw_data["checkin_state"].rename(columns=checkins_rename, inplace=True, errors="raise")         # type: ignore
     raw_data["checkin_time"].rename(columns=checkin_time_rename, inplace=True, errors="raise")      # type: ignore
+    raw_data["vaxreg_malaysia"].rename(columns=registration_rename, inplace=True, errors="raise")   # type: ignore
+    raw_data["vaxreg_state"].rename(columns=registration_rename, inplace=True, errors="raise")      # type: ignore
+    raw_data["vax_malaysia"].rename(columns=vaccination_rename, inplace=True, errors="raise")       # type: ignore
+    raw_data["vax_state"].rename(columns=vaccination_rename, inplace=True, errors="raise")          # type: ignore
+
     # Fixing misspelled state name
     raw_data["checkin_state"].loc[raw_data["checkin_state"]["state"] == "W.P. KualaLumpur", "state"] = "W.P. Kuala Lumpur"  # type: ignore
 
@@ -88,11 +124,15 @@ def load_data_from_github():
     nation_df = pd.merge(nation_df, raw_data["tests_msia"], left_on="date", right_on="date", how="outer")
     nation_df = pd.merge(nation_df, raw_data["checkin_msia"], left_on="date", right_on="date", how="outer")
     nation_df = pd.merge(nation_df, raw_data["trace_msia"], left_on="date", right_on="date", how="outer")
+    nation_df = pd.merge(nation_df, raw_data["vaxreg_malaysia"], left_on="date", right_on="date", how="outer")
+    nation_df = pd.merge(nation_df, raw_data["vax_malaysia"], left_on="date", right_on="date", how="outer")
     nation_df.sort_values(by=["date"], inplace=True)
 
     # Merging state data
     state_df = pd.merge(raw_data["cases_state"], raw_data["deaths_state"], left_on=["date", "state"], right_on=["date", "state"], how="outer")
     state_df = pd.merge(state_df, raw_data["checkin_state"], left_on=["date", "state"], right_on=["date", "state"], how="outer")
+    state_df = pd.merge(state_df, raw_data["vaxreg_state"], left_on=["date", "state"], right_on=["date", "state"], how="outer")
+    state_df = pd.merge(state_df, raw_data["vax_state"], left_on=["date", "state"], right_on=["date", "state"], how="outer")
     state_df.sort_values(by=["date", "state"], inplace=True)
 
     # Converting to dictionary and fixing date type
@@ -103,8 +143,9 @@ def load_data_from_github():
     quarantine_data = fix_date_type(raw_data["quarantine_io"].to_dict(orient="records"))
     cluster_data = fix_date_type(raw_data["clusters"].to_dict(orient="records"), ["date_announced", "date_last_onset"])
     checkin_data = fix_date_type(raw_data["checkin_time"].to_dict(orient="records"))
+    timeseries_data = fix_date_type(raw_data["timeseries"].to_dict(orient="records"))
 
-    return nation_data, state_data, hosp_data, icu_data, quarantine_data, cluster_data, checkin_data
+    return nation_data, state_data, hosp_data, icu_data, quarantine_data, cluster_data, checkin_data, timeseries_data
 
 
 if __name__ == "__main__":
@@ -118,7 +159,7 @@ if __name__ == "__main__":
     logger.info("Starting data sync")
 
     nation_data, state_data, hosp_data, icu_data, \
-        quarantine_data, cluster_data, checkin_data = load_data_from_github()
+        quarantine_data, cluster_data, checkin_data, timeseries_data = load_data_from_github()
 
     # Remove old DB file
     if os.path.exists("moh_data.sqlite"):
@@ -136,5 +177,6 @@ if __name__ == "__main__":
     s.bulk_insert_mappings(Quarantine, quarantine_data)
     s.bulk_insert_mappings(Cluster, cluster_data)
     s.bulk_insert_mappings(Checkin, checkin_data)
+    s.bulk_insert_mappings(Timeseries, timeseries_data)
     s.commit()
     logger.info("Ended data sync")

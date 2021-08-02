@@ -1,9 +1,7 @@
-from enum import auto
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKeyConstraint
-from datetime import date
 Base = declarative_base()
 
 
@@ -27,6 +25,21 @@ class Nation(Base):
     traces_casual = Column(Integer)
     traces_hide_large = Column(Integer)
     traces_hide_small = Column(Integer)
+    reg_total = Column(Integer)
+    reg_phase_2 = Column(Integer)
+    reg_via_mysejahtera = Column(Integer)
+    reg_via_call = Column(Integer)
+    reg_via_web = Column(Integer)
+    reg_children = Column(Integer)
+    reg_elderly = Column(Integer)
+    reg_comorb = Column(Integer)
+    reg_oku = Column(Integer)
+    dose1_daily = Column(Integer)
+    dose2_daily = Column(Integer)
+    total_daily = Column(Integer)
+    dose1_cumulative = Column(Integer)
+    dose2_cumulative = Column(Integer)
+    total_cumulative = Column(Integer)
 
     def as_dict(self):
         temp = {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -43,6 +56,21 @@ class State(Base):
     checkins = Column(Integer)
     checkins_unique_ind = Column(Integer)
     checkins_unique_loc = Column(Integer)
+    reg_total = Column(Integer)
+    reg_phase_2 = Column(Integer)
+    reg_via_mysejahtera = Column(Integer)
+    reg_via_call = Column(Integer)
+    reg_via_web = Column(Integer)
+    reg_children = Column(Integer)
+    reg_elderly = Column(Integer)
+    reg_comorb = Column(Integer)
+    reg_oku = Column(Integer)
+    dose1_daily = Column(Integer)
+    dose2_daily = Column(Integer)
+    total_daily = Column(Integer)
+    dose1_cumulative = Column(Integer)
+    dose2_cumulative = Column(Integer)
+    total_cumulative = Column(Integer)
     facility_hospital = relationship("Hospital", uselist=False)
     facility_quarantine = relationship("Quarantine", uselist=False)
     facility_icu = relationship("ICU", uselist=False)
@@ -191,3 +219,43 @@ class Checkin(Base):
     time_2230 = Column(Integer)
     time_2300 = Column(Integer)
     time_2330 = Column(Integer)
+
+
+class Registration(Base):
+    __tablename__ = "vax_registration"
+    date = Column(Date, primary_key=True)
+    state = Column(String, primary_key=True)
+    reg_total = Column(Integer)
+    reg_phase_2 = Column(Integer)
+    reg_via_mysejahtera = Column(Integer)
+    reg_via_call = Column(Integer)
+    reg_via_web = Column(Integer)
+    reg_children = Column(Integer)
+    reg_elderly = Column(Integer)
+    reg_comorb = Column(Integer)
+    reg_oku = Column(Integer)
+
+
+class Vaccination(Base):
+    __tablename__ = "vaccination"
+    date = Column(Date, primary_key=True)
+    state = Column(String, primary_key=True)
+    dose1_daily = Column(Integer)
+    dose2_daily = Column(Integer)
+    total_daily = Column(Integer)
+    dose1_cumulative = Column(Integer)
+    dose2_cumulative = Column(Integer)
+    total_cumulative = Column(Integer)
+
+
+class Timeseries(Base):
+    __tablename__ = "timeseries"
+    date = Column(Date, primary_key=True)
+    confirmed = Column(Integer)
+    deaths = Column(Integer)
+    recovered = Column(Integer)
+
+    def as_dict(self):
+        temp = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        temp["date"] = temp["date"].isoformat()
+        return temp

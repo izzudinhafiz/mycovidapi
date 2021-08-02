@@ -3,7 +3,7 @@
 ## Introduction
 JSON [API Site](https://mycovidapi.izzudinhafiz.com) for Malaysian Covid statistics hosted at https://mycovidapi.izzudinhafiz.com.
 
-The project builds upon the Covid and MySejahtera dataset by [MoH Malaysia](https://github.com/MoH-Malaysia/covid19-public).
+The project builds upon the Covid and MySejahtera dataset by [MoH Malaysia](https://github.com/MoH-Malaysia/covid19-public) as well as the vaccination and registration data by [CITF](https://github.com/CITF-Malaysia/citf-public).
 
 The intent is to allow any developer to easily develop dashboards using the comprehensive data supplied with a JSON friendly interface.
 
@@ -216,6 +216,11 @@ According to MoH Github page, the data is updated daily by 2359. So if you'd pre
 
 [Open data on COVID-19 in Malaysia](https://github.com/MoH-Malaysia/covid19-public) - [MoH Malaysia](https://github.com/MoH-Malaysia)
 
+[Open data on Malaysia's National Covid-​19 Immunisation Programme](https://github.com/CITF-Malaysia/citf-public) - [CITF-Malaysia](https://github.com/CITF-Malaysia)
+
+[JSON time-series of coronavirus cases](https://github.com/pomber/covid19) - [pomber](https://github.com/pomber)
+
+
 # Roadmap
-- [ ] Integrate [CITF](https://github.com/CITF-Malaysia/citf-public) data
-- [ ] V2 API with consolidated and bucketed data
+- [x] Integrate [CITF](https://github.com/CITF-Malaysia/citf-public) data
+- [x] Add consolidated and bucketed data

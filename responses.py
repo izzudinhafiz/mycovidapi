@@ -2,7 +2,7 @@ from flask_restful import fields
 
 timeseries = {
     "date": fields.String,
-    "cases": fields.Integer,
+    "cases": fields.Integer(attribute="confirmed"),
     "deaths": fields.Integer,
     "recovered": fields.Integer
 }
@@ -92,4 +92,27 @@ quarantine = {
     "activeCovid": fields.Integer(attribute="pkrc_covid"),
     "activePUI": fields.Integer(attribute="pkrc_pui"),
     "activeNonCovid": fields.Integer(attribute="pkrc_noncovid")
+}
+
+vax_registration = {
+    "date": fields.String,
+    "reg_total": fields.Integer,
+    "reg_phase_2": fields.Integer,
+    "reg_via_mysejahtera": fields.Integer,
+    "reg_via_call": fields.Integer,
+    "reg_via_web": fields.Integer,
+    "reg_children": fields.Integer,
+    "reg_elderly": fields.Integer,
+    "reg_comorb": fields.Integer,
+    "reg_oku": fields.Integer
+}
+
+vaccination = {
+    "date": fields.String,
+    "dose1_daily": fields.Integer,
+    "dose2_daily": fields.Integer,
+    "total_daily": fields.Integer,
+    "dose1_cumulative": fields.Integer,
+    "dose2_cumulative": fields.Integer,
+    "total_cumulative": fields.Integer
 }

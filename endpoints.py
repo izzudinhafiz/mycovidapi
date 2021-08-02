@@ -111,6 +111,18 @@ class Deaths(Resource):
         return standard_query(location)
 
 
+class VaxRegistration(Resource):
+    @marshal_with(responses.vax_registration)
+    def get(self, location):
+        return standard_query(location)
+
+
+class Vaccination(Resource):
+    @marshal_with(responses.vaccination)
+    def get(self, location):
+        return standard_query(location)
+
+
 class Tests(Resource):
     @marshal_with(responses.tests)
     def get(self):
@@ -185,3 +197,29 @@ class Healthcares(Resource):
             return marshal(output, responses.icu)
         elif facility == "quarantine":
             return marshal(output, responses.quarantine)
+
+
+class TimeseriesEndpoint(Resource):
+    @marshal_with(responses.timeseries)
+    def get(self):
+        output = []
+
+        args = parser.parse_args()
+        from_date = args.from_date
+        to_date = args.to_date
+
+        with Session() as s:
+
+            source = Timeseries
+            q = s.query(source)
+
+            if from_date:
+                q = q.filter(source.date >= from_date)
+
+            if to_date:
+                q = q.filter(source.date <= to_date)
+
+            for row in q:
+                output.append(row.as_dict())
+
+        return output
