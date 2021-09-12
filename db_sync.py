@@ -71,9 +71,9 @@ def rename_data_from_github() -> DataSet:
     }
 
     vaccination_rename = {
-        "dose1_cumul": "dose1_cumulative",
-        "dose2_cumul": "dose2_cumulative",
-        "total_cumul": "total_cumulative"
+        "cumul_partial": "dose1_cumulative",
+        "cumul_full": "dose2_cumulative",
+        "cumul": "total_cumulative"
     }
 
     # Special name wrangling for checkin time labels which are 1, 2, 3 etc.
